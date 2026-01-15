@@ -169,10 +169,15 @@ class SeleniumTestEngine:
                 options.add_experimental_option('excludeSwitches', ['enable-automation', 'enable-logging'])
                 options.add_argument('--disable-popup-blocking')  # 禁用弹窗拦截（避免某些警告）
                 options.add_argument('--disable-notifications')  # 禁用所有通知
+                options.add_argument('--window-size=1200,800')
+                http_proxy = os.getenv('http_proxy', None)
+                if http_proxy:
+                    options.add_argument(f'--proxy-server={http_proxy}')
 
                 # 使用缓存优先策略
-                service = Service(ChromeDriverManager().install())
+                service = Service()
                 self.driver = webdriver.Chrome(service=service, options=options)
+                self.driver.set_window_position(10, 100)
 
             elif self.browser_type == 'firefox':
                 from selenium.webdriver.firefox.options import Options

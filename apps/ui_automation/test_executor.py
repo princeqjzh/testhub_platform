@@ -7,6 +7,7 @@ import json
 from datetime import datetime
 from django.utils import timezone
 from django.db import connection
+import os
 from playwright.sync_api import sync_playwright
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -1537,10 +1538,15 @@ class TestExecutor:
             options.add_argument('--disable-background-timer-throttling')
             options.add_argument('--disable-renderer-backgrounding')
             options.add_argument('--disable-device-discovery-notifications')
+            options.add_argument('--window-size=1200,800')
+            http_proxy = os.getenv('http_proxy', None)
+            if http_proxy:
+                options.add_argument(f'--proxy-server={http_proxy}')
             
             # 使用缓存优先策略
-            service = ChromeService(ChromeDriverManager().install())
+            service = ChromeService()
             driver = webdriver.Chrome(service=service, options=options)
+            driver.set_window_position(10, 100)
         elif self.browser == 'firefox':
             options = FirefoxOptions()
             if self.headless:
