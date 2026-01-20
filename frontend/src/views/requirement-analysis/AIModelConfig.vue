@@ -67,10 +67,14 @@
                 <label>温度参数:</label>
                 <span>{{ config.temperature }}</span>
               </div>
-                <div class="detail-item">
-                  <label>创建时间:</label>
-                  <span>{{ formatDateTime(config.created_at) }}</span>
-                </div>
+              <div class="detail-item">
+                <label>Top P参数:</label>
+                <span>{{ config.top_p }}</span>
+              </div>
+              <div class="detail-item">
+                <label>创建时间:</label>
+                <span>{{ formatDateTime(config.created_at) }}</span>
+              </div>
               </div>
             </div>
           </template>
@@ -94,7 +98,6 @@
     <div 
       v-show="shouldShowModal"
       :class="['config-modal', { hidden: !shouldShowModal }]"
-      @click="closeModals" 
       @keydown.esc="closeModals">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
@@ -185,10 +188,10 @@
             <div class="form-row">
               <div class="form-group">
                 <label>最大Token数</label>
-                <input 
-                  v-model.number="configForm.max_tokens" 
-                  type="number" 
-                  min="100" 
+                <input
+                  v-model.number="configForm.max_tokens"
+                  type="number"
+                  min="100"
                   max="32000"
                   class="form-input"
                   placeholder="4096">
@@ -196,11 +199,11 @@
 
               <div class="form-group">
                 <label>温度参数</label>
-                <input 
-                  v-model.number="configForm.temperature" 
-                  type="number" 
-                  min="0" 
-                  max="2" 
+                <input
+                  v-model.number="configForm.temperature"
+                  type="number"
+                  min="0"
+                  max="2"
                   step="0.1"
                   class="form-input"
                   placeholder="0.7">
@@ -208,11 +211,11 @@
 
               <div class="form-group">
                 <label>Top P参数</label>
-                <input 
-                  v-model.number="configForm.top_p" 
-                  type="number" 
-                  min="0" 
-                  max="1" 
+                <input
+                  v-model.number="configForm.top_p"
+                  type="number"
+                  min="0"
+                  max="1"
                   step="0.1"
                   class="form-input"
                   placeholder="0.9">
@@ -221,8 +224,8 @@
 
             <div class="form-group">
               <label class="checkbox-label">
-                <input 
-                  v-model="configForm.is_active" 
+                <input
+                  v-model="configForm.is_active"
                   type="checkbox">
                 <span class="checkmark"></span>
                 启用此配置
@@ -245,7 +248,7 @@
     </div>
 
     <!-- 连接测试结果弹窗 -->
-    <div v-if="showTestResult" class="test-result-modal" @click="closeTestResult">
+    <div v-if="showTestResult" class="test-result-modal" @keydown.esc="closeTestResult">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
           <h3>连接测试结果</h3>
@@ -529,7 +532,7 @@ export default {
           }
           
           console.log('Updating with data:', updateData)
-          await api.patch(`/requirement-analysis/api/ai-models/${this.editingConfigId}/`, updateData)
+          await api.patch(`/requirement-analysis/ai-models/${this.editingConfigId}/`, updateData)
           ElMessage.success('配置更新成功')
         } else {
           console.log('Creating with data:', this.configForm)
@@ -591,7 +594,7 @@ export default {
       }
 
       try {
-        await api.delete(`/requirement-analysis/api/ai-models/${configId}/`)
+        await api.delete(`/requirement-analysis/ai-models/${configId}/`)
         ElMessage.success('配置删除成功')
         this.loadConfigs()
       } catch (error) {
@@ -605,7 +608,12 @@ export default {
       this.testingConfigId = config.id
 
       try {
-        const response = await api.post(`/requirement-analysis/api/ai-models/${config.id}/test_connection/`)
+        // 测试连接需要更长的超时时间（90秒），因为大模型响应较慢
+        const response = await api.post(
+          `/requirement-analysis/ai-models/${config.id}/test_connection/`,
+          {},
+          { timeout: 90000 }  // 90秒超时
+        )
         this.testResult = response.data
         this.showTestResult = true
       } catch (error) {
@@ -1007,6 +1015,17 @@ export default {
   color: #666;
   font-size: 0.85rem;
   font-style: italic;
+}
+
+.form-section-title {
+  margin: 25px 0 15px 0;
+  padding: 10px 15px;
+  background: #f8f9fa;
+  border-left: 4px solid #3498db;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1rem;
+  border-radius: 4px;
 }
 
 .modal-actions {

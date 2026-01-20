@@ -83,7 +83,7 @@
     </div>
 
     <!-- 添加/编辑配置弹窗 -->
-    <div v-if="showAddModal || showEditModal" class="config-modal" @click="closeModals">
+    <div v-if="showAddModal || showEditModal" class="config-modal" @keydown.esc="closeModals">
       <div class="modal-content large" @click.stop>
         <div class="modal-header">
           <h3>{{ isEditing ? '编辑' : '添加' }}提示词配置</h3>
@@ -161,7 +161,7 @@
     </div>
 
     <!-- 预览弹窗 -->
-    <div v-if="showPreviewModal" class="preview-modal" @click="closePreview">
+    <div v-if="showPreviewModal" class="preview-modal" @keydown.esc="closePreview">
       <div class="modal-content large" @click.stop>
         <div class="modal-header">
           <h3>提示词预览 - {{ previewConfig.name }}</h3>
@@ -193,7 +193,7 @@
     </div>
 
     <!-- 默认提示词预览弹窗 -->
-    <div v-if="showDefaultsModal" class="defaults-modal" @click="closeDefaultsModal">
+    <div v-if="showDefaultsModal" class="defaults-modal" @keydown.esc="closeDefaultsModal">
       <div class="modal-content large" @click.stop>
         <div class="modal-header">
           <h3>默认提示词预览</h3>
@@ -396,7 +396,7 @@ export default {
       
       try {
         if (this.isEditing) {
-          await api.patch(`/requirement-analysis/api/prompts/${this.editingConfigId}/`, this.configForm)
+          await api.patch(`/requirement-analysis/prompts/${this.editingConfigId}/`, this.configForm)
           ElMessage.success('配置更新成功')
         } else {
           await api.post('/requirement-analysis/api/prompts/', this.configForm)
@@ -419,7 +419,7 @@ export default {
       }
 
       try {
-        await api.delete(`/requirement-analysis/api/prompts/${configId}/`)
+        await api.delete(`/requirement-analysis/prompts/${configId}/`)
         ElMessage.success('配置删除成功')
         this.loadConfigs()
       } catch (error) {
