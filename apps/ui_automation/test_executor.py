@@ -250,14 +250,15 @@ class TestExecutor:
                         # 添加防检测参数
                         browser = p.chromium.launch(
                             headless=self.headless,
-                            args=['--disable-blink-features=AutomationControlled']
+                            args=['--disable-blink-features=AutomationControlled', '--window-position=0,0'],
+                            proxy={'server': 'http://127.0.0.1:7890'}
                         )
 
                     print(f"✓ 浏览器已启动")
 
                     # 配置上下文（User Agent 和 Viewport）
                     self.context = browser.new_context(
-                        viewport={'width': 1920, 'height': 1080},
+                        viewport={'width': 1400, 'height': 1050},
                         user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
                     )
                     self.current_page = self.context.new_page()
@@ -474,7 +475,7 @@ class TestExecutor:
                 import base64
                 # 增加超时设置，避免截图等待时间过长
                 print(f"🔍 开始捕获异常截图...")
-                screenshot_bytes = self.current_page.screenshot(timeout=5000)  # 5秒超时
+                screenshot_bytes = self.current_page.screenshot(timeout=50000)  # 5秒超时
                 print(f"   截图字节大小: {len(screenshot_bytes)} bytes")
 
                 screenshot_base64 = base64.b64encode(screenshot_bytes).decode('utf-8')
@@ -1887,7 +1888,7 @@ class TestExecutor:
                             if attempt > 0:
                                 print(f"⚠️  重新查找元素（Stale Element 重试）... (尝试 {attempt + 1}/{max_retries})")
                                 # 增加等待时间，让页面 DOM 稳定（对于 Vue/React 应用很重要）
-                                wait_time = 1.0 if attempt == 1 else 1.5  # 第一次重试等1秒，第二次重试等1.5秒
+                                wait_time = 1.4 if attempt == 1 else 1.5  # 第一次重试等1秒，第二次重试等1.5秒
                                 print(f"等待 {wait_time}秒 让页面稳定...")
                                 time.sleep(wait_time)
                                 # 重新定位元素
@@ -1970,7 +1971,7 @@ class TestExecutor:
                             if attempt < max_retries - 1:
                                 print(f"⚠️  元素过期（Stale Element），正在重试... (尝试 {attempt + 2}/{max_retries})")
                                 # 增加等待时间，让页面 DOM 稳定
-                                wait_time = 1.0 if attempt == 0 else 1.5
+                                wait_time = 1.6 if attempt == 0 else 1.5
                                 print(f"等待 {wait_time}秒 让页面稳定...")
                                 time.sleep(wait_time)
                                 element_obj = wait.until(EC.presence_of_element_located((by, locator_value)))
@@ -1990,7 +1991,7 @@ class TestExecutor:
                             if attempt < max_retries - 1:
                                 print(f"⚠️  元素过期（Stale Element），正在重试... (尝试 {attempt + 2}/{max_retries})")
                                 # 增加等待时间，让页面 DOM 稳定
-                                wait_time = 1.0 if attempt == 0 else 1.5
+                                wait_time = 1.7 if attempt == 0 else 1.5
                                 print(f"等待 {wait_time}秒 让页面稳定...")
                                 time.sleep(wait_time)
                                 element_obj = wait.until(EC.presence_of_element_located((by, locator_value)))
@@ -2010,7 +2011,7 @@ class TestExecutor:
                             if attempt < max_retries - 1:
                                 print(f"⚠️  元素过期（Stale Element），正在重试... (尝试 {attempt + 2}/{max_retries})")
                                 # 增加等待时间，让页面 DOM 稳定
-                                wait_time = 1.0 if attempt == 0 else 1.5
+                                wait_time = 1.8 if attempt == 0 else 1.5
                                 print(f"等待 {wait_time}秒 让页面稳定...")
                                 time.sleep(wait_time)
                                 element_obj = wait.until(EC.presence_of_element_located((by, locator_value)))

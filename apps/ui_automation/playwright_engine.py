@@ -49,12 +49,13 @@ class PlaywrightTestEngine:
             # 启动浏览器
             self.browser = await browser_launcher.launch(
                 headless=self.headless,
-                args=['--disable-blink-features=AutomationControlled']  # 避免被检测
+                args=['--disable-blink-features=AutomationControlled', '--window-position=0,0'],  # 避免被检测
+                proxy={'server': 'http://127.0.0.1:7890'}
             )
 
             # 创建浏览器上下文
             self.context = await self.browser.new_context(
-                viewport={'width': 1920, 'height': 1080},
+                viewport={'width': 1400, 'height': 1050},
                 user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
             )
 
